@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> {{ title }} </title>
+</head>
+<body>
+    <header style = 'font-size: 1.5em; color: green;'>
+        {% block header %}
+        {% endblock header %}
+    </header>
+    <article>
+        {% block content %}
+        {% endblock content %}
+    </article>
+    <footer style = 'font-size: 1.5em; color: blue;'>
+        {% block footer %}
+        {% endblock footer %}
+    </footer>
+</body>
+</html>
