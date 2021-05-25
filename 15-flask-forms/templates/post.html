@@ -3,12 +3,15 @@
 {% block content %}
 <form method="POST">
     <label for="name">Name</label>
+    <label for="date">Date</label>
     <input type="text" name="name">
+    <input type="date" name="date">
     <input type="submit" name="submit">
 </form>
 {% if content %}
-    <p>Your name is: {{ content }}</p>
+    <p>Your name is: {{ content.name }}</p>
+    <p>The date you selected is: {{ content.date }}</p>
 {% else %}
-    <p>Please input your name</p>
+    <p>Please input your name and select date</p>
 {% endif %}
 {% endblock content %}

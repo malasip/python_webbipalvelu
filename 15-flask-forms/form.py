@@ -1,5 +1,5 @@
+from datetime import date
 from flask import Flask, render_template, flash, url_for, request, redirect
-from markupsafe import escape
 
 app = Flask(__name__)
 app.secret_key = b'798fgdlna9g8odfahgnadgfdabgap9g0aydfg7'
@@ -25,7 +25,10 @@ def get():
 def post():
     content = None
     if request.method == 'POST':
-        content = escape(request.form['name'])
+        content = {
+            'name': request.form['name'],
+            'date': request.form['date']
+        }
     title = 'Index page'
     return render_template('post.html', title = title, content = content)
 
