@@ -7,7 +7,9 @@
         <p>{{ message }}</p>
         {% endfor %}
     {% else %}
-        {{ content }}
+        {% for item in content %}
+            <a href=" {{ item.url }}">{{ item.name }}</a><br>
+        {% endfor %}
     {% endif %}
 {% endwith %}
 {% endblock content %}

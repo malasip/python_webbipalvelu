@@ -7,7 +7,11 @@ app.secret_key = b'798fgdlna9g8odfahgnadgfdabgap9g0aydfg7'
 @app.route('/')
 def index():
     title = 'Index page'
-    content = 'Content'
+    content = [
+                {'name': 'get',
+                'url': url_for('get')},
+                {'name': 'post',
+                'url': url_for('post')}]
     return render_template('index.html', title = title, content = content)
 
 @app.route('/get')
