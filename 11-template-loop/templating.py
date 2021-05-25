@@ -11,10 +11,8 @@ def index():
 @app.route('/loop')
 def loop():
     title = 'For loop test'
-    content = ['cats', 'dogs', 'birds', 'fishes', 'monkeys']
+    content = ['cat', 'dog', 'bird', 'fish', 'monkey', 'apple']
     return render_template('loop.html', title = title, content = content)
-
-
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0')

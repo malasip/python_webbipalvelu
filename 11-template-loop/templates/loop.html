@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
     {% for item in content %}
+    {% if item == 'apple' %}
+    <p>Wait... {{ item }} is not an animal!?</p>
+    {% else %}
     <p>{{ item }}</p>
+    {% endif %}
     {% endfor %}
 {% endblock %}
