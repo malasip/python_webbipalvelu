@@ -33,7 +33,7 @@ def post():
     return render_template('post.html', title = title, content = content)
 
 @app.route('/<path>')
-def error(path):
+def trap(path):
     content = 'What did you expect to find here?'
     flash(content)
     return redirect(url_for('index'))
