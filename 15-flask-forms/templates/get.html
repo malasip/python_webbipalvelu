@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="GET">
+    <label for="q">Input something</label>
+    <input type="text" name="q">
+    <input type="submit" value="Press me">
+</form>
+{% if content %}
+    <p>Your typed: {{ content }}</p>
+{% endif %}
+{% endblock content %}
