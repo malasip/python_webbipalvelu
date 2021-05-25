@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if weekday != 5 %}
+        <p>Tänään ei ole perjantai :(</p>
+        <p>{{ weekdays[weekday-1] }}ssa eletään.</p>
+    {% else %}
+        {% if weekdays %}
+        <p>tänään on {{ weekdays[weekday-1] }}</p>
+        {% else %}
+        <p>Viikonpäivä lookuptable puuttuu, nyt on päivä {{ weekday }}</p>
+        {% endif %}
+    {% endif %}
+{% endblock content %}
