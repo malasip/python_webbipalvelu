@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="POST">
+    <label for="number1">First number</label>
+    <input type="number" id="number1" name="number1" step="any"><br>
+    <label for="number2">Second number</label>
+    <input type="number" id="number2" name="number2" step="any"><br>
+    <label>Select operator:</label>
+    <label for="plus">+</label>
+    <input type="radio" id="plus" name="operator" value="0" checked>
+    <label for="minus">-</label>
+    <input type="radio" id="minus" name="operator" value="1">
+    <label for="division">/</label>
+    <input type="radio" id="division" name="operator" value="2">
+    <label for="multiplication">*</label>
+    <input type="radio" id="multiplication" name="operator" value="3"><br><br>
+    <input type="submit" name="submit" value="Calculate"><br>
+</form>
+{% if content %}
+    <label for="result">Result: </label>
+    <input type="number" id="result" name="result" disabled value="{{ content }}">
+{% endif %}
+{% endblock content %}
