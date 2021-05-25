@@ -8,11 +8,13 @@ def index():
     content = 'Document content'
     return render_template('base.html', title = title, content = content)
 
-@app.route('/about')
-def about():
-    title = 'About page'
-    content = 'About page with larger font'
-    return render_template('about.html', title = title, content = content)
+@app.route('/loop')
+def loop():
+    title = 'For loop test'
+    content = ['cats', 'dogs', 'birds', 'fishes', 'monkeys']
+    return render_template('loop.html', title = title, content = content)
+
+
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0')
