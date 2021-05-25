@@ -34,7 +34,8 @@ def post():
 
 @app.route('/<path>')
 def trap(path):
-    content = 'What did you expect to find here?'
+    path = str(path)
+    content = f'What did you expect to find here? Path {path} is not valid'
     flash(content)
     return redirect(url_for('index'))
 
