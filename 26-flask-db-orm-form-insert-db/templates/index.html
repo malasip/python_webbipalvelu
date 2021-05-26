@@ -3,6 +3,16 @@
 {% block content %}
     <h1>{{ title }}</h1>
     {% for message in messages %}
-    <p>{{ message }}</p>
+        {% if not message.parent %}
+            <p>User {{ message.user }} posted on {{ message.created }}:<br>{{ message.message }}<br><a href="/delete/{{ message.id }}">Delete</a> <a href="/reply/{{ message.id }}">Reply</a></p>
+            {% if message.children %}
+                {% for child in message.children %}
+                {% if not child.deleted %}
+                <p style="margin-left: 40px">User {{ child.user }} replied on {{ child.created }}:<br>{{ child.message }}<br><a href="/delete/{{ child.id }}">Delete</a></p>
+                {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
     {% endfor %}
+    <h4><a href="/add">Create new post</a></h4>
 {% endblock content %}

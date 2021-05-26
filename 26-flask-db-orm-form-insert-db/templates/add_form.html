@@ -4,11 +4,7 @@
     <h3>{{ title }}</h3>
     <form method="POST">
         {% for field in form %}
-        {% if not field.flags.hidden %}
-        <p>{{ field.label }}: {{ field }}</p>
-        {% else %}
-        {{ field }}
-        {% endif %}
+        <P>{% if not field.flags.hidden %}{{ field.label }}: {% endif %}{{ field }}</p>
         {% endfor %}
         <input type="submit">
     </form>

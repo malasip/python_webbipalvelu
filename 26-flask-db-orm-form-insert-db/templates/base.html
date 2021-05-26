@@ -6,6 +6,11 @@
     <title>{{ title }}</title>
 </head>
 <body>
+    {% if get_flashed_messages() %}
+    {% for message in get_flashed_messages() %}
+    <p>{{ message }}</p>
+    {% endfor %}
+    {% endif %}
     {% block content%}
     <p>Base content</p>
     {% endblock content%}
