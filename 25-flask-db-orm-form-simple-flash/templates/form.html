@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <p>Please insert your credit card information:</p>
+    <form method = "POST" action = "/check">
+    {% for field in form %}
+    {% if not field.flags.hidden %}
+    <p> {{ field.label }}: {{ field }}</p>
+    {% else %}
+    {{ field }}
+    {% endif %}
+    {% endfor %}
+    <input type = "submit">
+    </form>
+{% endblock content %}
