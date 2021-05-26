@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3>{{ title }}</h3>
+    <form>
+        {% for field in form %}
+        {% if not field.flags.hidden %}
+        <p>{{ field.label }}: {{ field }}</p>
+        {% endif %}
+        {% endfor %}
+        <input type="submit">
+    </form>
+{% endblock content %}
