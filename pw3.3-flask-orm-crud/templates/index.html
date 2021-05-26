@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for message in messages %}
+<div style="border: 2px; border-style: dotted;">
+<h3>{{ message.title }}</h3>
+<h5>Posted by {{ message.user }} on {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if message.modified %}, edited {{ message.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %}</h5>
+<p>{{ message.content }}</p>
+<p><a href="/delete?id={{ message.id }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/edit?id={{ message.id }}">Edit</a></p>
+</div>
+{% endfor %}
+{% endblock content %}

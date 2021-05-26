@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method = "POST", action="/add">
+    {% for field in form %}
+    <p>{% if not field.flags.hidden %}{{ field.label }}: {% endif %}{{ field }}</p>
+    {% endfor %}
+    <input type="submit">
+</form>
+{% endblock content %}

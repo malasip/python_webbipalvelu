@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3>Animal list</h3>
+    {% if not animals %}
+    <p>No animals yet :(</p>
+    {% endif %}
+    {% for animal in animals %}
+    <p>{{ animal.name }}</p>
+    {% endfor %}
+    <a href="/form">Add new animal</a>
+{% endblock content %}
