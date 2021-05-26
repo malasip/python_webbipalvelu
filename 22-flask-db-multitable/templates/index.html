@@ -3,6 +3,6 @@
 {% block content %}
     <h1>{{ title }}</h1>
     {% for device in devices %}
-    <p>{{ device.name }}: {{ device.devtype.name }}</p>
+    <p>Device name: {{ device.name }}, created on: {{ device.created }}, type: {{ device.devtype.name }}</p>
     {% endfor %}
 {% endblock content %}
