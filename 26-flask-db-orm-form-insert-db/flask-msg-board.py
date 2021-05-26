@@ -45,7 +45,6 @@ def initDB():
 @app.route('/')
 def index():
     messages = Message.query.filter(Message.deleted == False).all()
-    print(messages)
     title = 'Simple messageboard'
     return render_template('index.html', title = title, messages = messages)
 
@@ -80,7 +79,6 @@ def reply(id):
 def delete(id):
     message = Message.query.get(id)
     message.deleted = True
-    print(id)
     db.session.commit()
     flash('Message deleted')
     return redirect('/')
