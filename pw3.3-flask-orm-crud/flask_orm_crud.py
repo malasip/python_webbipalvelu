@@ -53,8 +53,8 @@ def edit():
     id = escape(request.args.get('id'))
     message = Message.query.get(id)
     if(request.method == 'POST'):
-        message.title = escape(request.form.get('title'))
-        message.content = escape(request.form.get('content'))
+        message.title = request.form.get('title')
+        message.content = request.form.get('content')
         message.modified = datetime.now()
         db.session.commit()
         flash('Message modified succesfully')
