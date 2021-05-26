@@ -4,11 +4,7 @@
     <p>Please insert your credit card information:</p>
     <form method = "POST" action = "/check">
     {% for field in form %}
-    {% if not field.flags.hidden %}
-    <p> {{ field.label }}: {{ field }}</p>
-    {% else %}
-    {{ field }}
-    {% endif %}
+    <p>{% if not field.flags.hidden %}{{ field.label }}: {% endif %}{{ field }}</p>
     {% endfor %}
     <input type = "submit">
     </form>
