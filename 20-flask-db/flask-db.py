@@ -9,7 +9,6 @@ db = SQLAlchemy(app)
 class Device(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String, nullable = False)
-    type = db.Column(db.String, nullable = False)
 
 @app.before_first_request
 def initDB():
@@ -23,7 +22,8 @@ def initDB():
 @app.route('/')
 def index():
     devices = Device.query.all()
-    return render_template('index.html', devices = devices)
+    title = 'Simple database'
+    return render_template('index.html', title = title, devices = devices)
 
 if __name__ == '__main__':
     app.run()
