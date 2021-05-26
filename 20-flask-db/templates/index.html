@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Super simple database</h1>
+    {% for device in devices %}
+    <p>{{ device.name }}: {{ device.type }}</p>
+    {% endfor %}
+{% endblock content %}
