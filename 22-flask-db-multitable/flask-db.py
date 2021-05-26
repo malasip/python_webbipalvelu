@@ -7,16 +7,16 @@ app = Flask(__name__)
 
 db = SQLAlchemy(app)
 
-class Devtype(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String, nullable = False)
-
 class Device(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String, nullable = False)
     created = db.Column(db.DateTime, nullable = False, default=datetime.utcnow)
     devtype_id = db.Column(db.Integer, db.ForeignKey('devtype.id'), nullable = False)
-    devtype = db.relationship('Devtype', backref=db.backref('devtype', lazy=True))
+
+class Devtype(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String, nullable = False)
+    devices = db.relationship('Device', backref=db.backref('devtype', lazy=True))
 
 
 @app.before_first_request
