@@ -33,8 +33,6 @@ def initDB():
 @app.route('/')
 def index():
     devices = Device.query.all()
-    for device in devices:
-        print(device.devtype.name)
     title = 'Simple database with relations'
     return render_template('index.html', title = title, devices = devices)
 
