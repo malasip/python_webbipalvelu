@@ -13,7 +13,7 @@ db = SQLAlchemy(app)
 class Device(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String, nullable = False)
-    created = db.Column(db.DateTime, nullable = False, default=datetime.utcnow)
+    created = db.Column(db.DateTime, nullable = False, default=datetime.now)
     devtype_id = db.Column(db.Integer, db.ForeignKey('devtype.id'), nullable = False)
 
 class Devtype(db.Model):
@@ -28,10 +28,6 @@ def initDB():
     db.create_all()
     db.session.add(Devtype(name = 'Laptop'))
     db.session.add(Devtype(name = 'Desktop'))
-    db.session.commit()
-    db.session.add(Device(name = 'ProBook 840', devtype = Devtype.query.filter_by(name = 'Laptop').first()))
-    db.session.add(Device(name = 'EliteBook Z1', devtype = Devtype.query.filter_by(name = 'Laptop').first()))
-    db.session.add(Device(name = 'EliteDesk Z', devtype = Devtype.query.filter_by(name = 'Desktop').first()))
     db.session.commit()
 
 @app.route('/')
