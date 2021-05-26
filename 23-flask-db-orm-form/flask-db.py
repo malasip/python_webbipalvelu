@@ -4,9 +4,10 @@ from flask.templating import render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms.ext.sqlalchemy.orm import model_form
+from markupsafe import escape
 
 app = Flask(__name__)
-app.secret_key = 'gufds098ghou4an a9fasgf89afg89aseasf'
+app.secret_key = 'ypw8t82JppEGdSQ9pj5rzmOSypda4W7LI1hTefNGDWOKNwNq7RPSfTGqPjNZEI1HsmFh0ELxrWzGIzAysKAyyyhwBWHJVmCcaraTZkNHnk3TsMHVMciJrBH6359cmSJW'
 
 db = SQLAlchemy(app)
 
@@ -14,12 +15,15 @@ class Device(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String, nullable = False)
     created = db.Column(db.DateTime, nullable = False, default=datetime.now)
+    devtype = db.relationship('Devtype', backref = db.backref('device', lazy = True))
     devtype_id = db.Column(db.Integer, db.ForeignKey('devtype.id'), nullable = False)
 
 class Devtype(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String, nullable = False)
-    devices = db.relationship('Device', backref=db.backref('devtype', lazy=True))
+
+    def __str__(self) -> str:
+        return escape(self.name)
 
 DeviceForm = model_form(model = Device, base_class = FlaskForm, db_session = db.session)
 
