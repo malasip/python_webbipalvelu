@@ -5,10 +5,10 @@
 <div style = "border:2px; border-style: solid; {% if task.completed %}color: green{% endif %}">
     <label>Task {{ task.id }},  created: {{ task.created }}{% if task.completed %}, completed: {{ task.completed }}{% endif %}</label>
     {% if task.completed %}
-        <a href="/{{ task.id }}/complete">Mark not completed</a>
+        <a href="/{{ task.id }}/complete">Mark not completed</a>&nbsp;&nbsp;<a href="/{{ task.id }}/delete">Delete</a>
     {% endif %}
     {% if not task.completed %}
-        <a href="/{{ task.id }}/complete">Mark as completed</a>&nbsp;&nbsp;<a href="/{{ task.id }}/edit">Edit</a>
+        <a href="/{{ task.id }}/complete">Mark as completed</a>&nbsp;&nbsp;<a href="/{{ task.id }}/edit">Edit</a>&nbsp;&nbsp;<a href="/{{ task.id }}/delete">Delete</a>
     {% endif %}
     <p>{{ task.content }}</p>
 </div>

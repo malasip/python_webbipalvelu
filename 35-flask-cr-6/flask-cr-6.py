@@ -54,10 +54,18 @@ def complete(id = None):
     task = Task.query.get_or_404(id)
     if not task.completed: 
         task.completed = datetime.utcnow()
-        flash('Task id marked as completed')
+        flash(f'Task {id} marked as completed')
     else:
         task.completed = None
-        flash('Task id marked as not completed')
+        flash(f'Task {id} marked as not completed')
+    db.session.commit()
+    return redirect('/')
+
+@app.route('/<int:id>/delete')
+def delTask(id = None):
+    task = Task.query.get_or_404(id)
+    db.session.delete(task)
+    flash(f'Task {id} marked as deleted')
     db.session.commit()
     return redirect('/')
 
