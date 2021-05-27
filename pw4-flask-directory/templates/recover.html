@@ -1,0 +1,20 @@
+{% extends 'base.html '%}
+
+{% block content %}
+
+<h3>Select contacts to restore:</h3>
+<form method="POST">
+{% for person in persons %}
+<div style="border: 1px; border-radius: 5px; border-style: solid; max-width: fit-content; padding: 5px; text-align:right">
+    <label>First name: </label><input type="text" value="{{ person.first_name }}" disabled><br>
+    <label>Last name: </label><input type="text" value="{{ person.last_name }}" disabled><br>
+    <label>Phone: </label><input type="text" value="{{ person.phone }}" disabled><br>
+    <label>Email: </label><input type="text" value="{{ person.email }}" disabled><br>
+    <label>Address: </label><input type="text" value="{{ person.address }}" disabled><br>
+    <label>City: </label><input type="text" value="{{ person.city }}" disabled><br>
+    <label>Restore: </label><input type="checkbox" value="{{ person.id }}" name="person_checkbox">
+</div><br>
+{% endfor %}
+<input type="submit" value="Restore selected">
+</form>
+{% endblock content %}

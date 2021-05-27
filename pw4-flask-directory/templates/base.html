@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> {{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+    <hr>
+    <nav>
+        <ul>
+        <li><a href="/"><button type="button">Main</button></a></li>
+        <li><a href="/add"><button type="button">Add a new contact</button></a></li>
+        <li><a href="/recover"><button type="button" style="color: green;">Restore deleted contacts</button></a></li>
+        <br>
+        <li><a href="/delete_all"><button type="button" style="color: red;">Delete all contacts</button></a></li>
+        </ul>
+    </nav>
+    <hr><br>
+    {% if get_flashed_messages() %}
+        {% for message in get_flashed_messages() %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    {% block content %}
+    {% endblock content %}
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends 'base.html '%}
+
+{% block content %}
+<div style="border: 1px; border-radius: 5px; border-style: solid; max-width: fit-content; padding: 5px;">
+    <form method="POST" style="text-align:right">
+        {% for field in form %}
+        <p>{% if not field.flags.hidden %}{{ field.label }}: {% endif %}{{ field }}</p>
+        {% endfor%}
+        <input type="submit" value="Save">
+    </form>
+</div>
+{% endblock content %}
