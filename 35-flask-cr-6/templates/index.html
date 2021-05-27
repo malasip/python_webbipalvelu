@@ -4,7 +4,12 @@
 {% for task in tasks %}
 <div style = "border:2px; border-style: solid; {% if task.completed %}color: green{% endif %}">
     <label>Task {{ task.id }},  created: {{ task.created }}{% if task.completed %}, completed: {{ task.completed }}{% endif %}</label>
-    <a href="/complete?id={{ task.id }}">Mark complete</a>&nbsp;&nbsp;<a href="/edit?id={{ task.id }}">Edit</a>
+    {% if task.completed %}
+        <a href="/{{ task.id }}/complete">Mark not completed</a>
+    {% endif %}
+    {% if not task.completed %}
+        <a href="/{{ task.id }}/complete">Mark as completed</a>&nbsp;&nbsp;<a href="/{{ task.id }}/edit">Edit</a>
+    {% endif %}
     <p>{{ task.content }}</p>
 </div>
 {% endfor %}

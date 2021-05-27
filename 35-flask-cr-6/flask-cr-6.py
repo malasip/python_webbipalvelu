@@ -29,41 +29,36 @@ def index():
     tasks = Task.query.all()
     return render_template('index.html', title = title, tasks = tasks)
 
+@app.route('/<int:id>/edit', methods = ['GET', 'POST'])
 @app.route('/create', methods = ['GET', 'POST'])
-def create():
+def create(id = None):
     form = TaskForm()
+    task = Task()
+    title = 'Create new task'
+    if id:
+        title = f'Edit task {id}'
+        task = Task.query.get_or_404(id)
+        form = TaskForm(obj = task)
+        flash(f'Task {id} modified')
+
     if form.validate_on_submit(): #m
-        task = Task()
         form.populate_obj(task)
         db.session.add(task)
         db.session.commit()
-        flash('Task created')
         return redirect('/')
-    title = 'Create new task'
+
     return render_template('form.html', title = title, form = form)
 
-@app.route('/edit', methods = ['GET', 'POST'])
-def modify():
-    if request.args.get('id'):
-        id = int(escape(request.args.get('id')))
-        task = Task.query.get(id)
-        if task == None:
-            flash(f'Invalid task ID')
-            return redirect('/')
-        form = TaskForm(obj = task) #m
-        if form.validate_on_submit():
-            form.populate_obj(task)
-            db.session.commit()
-            flash(f'Task {id} modified')
-            return redirect('/')
-        title = f'Edit task {id}'
-        return render_template('form.html', title = title, form = form)
-    flash(f'Invalid task ID')
-    return redirect('/')
-
-@app.route('/complete')
-def complete():
-    flash('Task id marked as completed')
+@app.route('/<int:id>/complete')
+def complete(id = None):
+    task = Task.query.get_or_404(id)
+    if not task.completed: 
+        task.completed = datetime.utcnow()
+        flash('Task id marked as completed')
+    else:
+        task.completed = None
+        flash('Task id marked as not completed')
+    db.session.commit()
     return redirect('/')
 
 
