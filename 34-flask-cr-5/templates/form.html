@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post"></form>
+    {% for field in form %}
+    <p>
+        {% if not field.flags.hidden %}
+        {{ field.label }}: 
+        {% endif %}
+        {{ field }}
+    </p>
+    {% endfor %}
+{% endblock content %}
