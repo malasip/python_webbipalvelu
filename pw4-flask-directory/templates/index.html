@@ -9,8 +9,8 @@
     <label>Email: </label><input type="text" value="{{ person.email }}" disabled><br>
     <label>Address: </label><input type="text" value="{{ person.address }}" disabled><br>
     <label>City: </label><input type="text" value="{{ person.city }}" disabled><br>
-    <a href="/{{ person.id }}/delete"><button type="button" style="color: red; float: left">Delete</button></a>
-    <a href="/{{ person.id }}/edit"><button type="button">Edit</button></a>
+    <a href="/{{ person.id }}/delete" style="color: red; float: left">Delete</a>
+    <a href="/{{ person.id }}/edit">Edit</a>
 </div><br>
 {% endfor %}
 {% endblock content %}
