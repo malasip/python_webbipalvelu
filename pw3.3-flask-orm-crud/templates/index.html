@@ -3,10 +3,21 @@
 {% block content %}
 {% for message in messages %}
 <div style="border: 2px; border-style: dotted;">
-<h3>{{ message.title }}</h3>
-<h5>Posted by {{ message.user }} on {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if message.modified %}, edited {{ message.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %}</h5>
-<p>{{ message.content }}</p>
-<p><a href="/delete?id={{ message.id }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/edit?id={{ message.id }}">Edit</a></p>
+    <h3>{{ message.title }}</h3>
+    <h5>Posted by {{ message.user }} on {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if message.modified %}, edited {{ message.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %}</h5>
+    <p>{{ message.content }}</p>
+    <p><a href="/delete?id={{ message.id }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/edit?id={{ message.id }}">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/add?reply={{ message.id }}">Reply</a></p>
+    {% if message.replies %}
+    {% for reply in message.replies %}
+    <hr>
+    <div style="margin-left: 20px;">
+        <h4>{{ reply.title }}</h4>
+        <h5>Reply by {{ reply.user }} on {{ reply.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if reply.modified %}, edited {{ reply.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %}</h5>
+        <p>{{ reply.content }}</p>
+        <p><a href="/delete?id={{ reply.id }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/edit?id={{ reply.id }}">Edit</a></p>
+    </div>
+    {% endfor %}
+    {% endif %}
 </div>
 {% endfor %}
 {% endblock content %}
