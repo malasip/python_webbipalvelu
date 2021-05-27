@@ -5,7 +5,7 @@ from flask_wtf import FlaskForm
 from wtforms.ext.sqlalchemy.orm import model_form
 
 app = Flask(__name__)
-app.secret_key = SystemRandom(SystemRandom, 128)
+app.secret_key = SystemRandom.randbytes(SystemRandom, 128)
 
 db = SQLAlchemy(app)
 
@@ -26,6 +26,17 @@ def index():
     return render_template('index.html', title = title, fishes = fishes)
 
 @app.route('/add', methods = ['GET', 'POST'])
+def add():
+    title = 'Add a fish'
+    form = FishForm()
+    if form.validate_on_submit():
+        fish = Fish()
+        form.populate_obj(fish)
+        db.session.add(fish)
+        db.session.commit()
+        flash(f'{fish.name} added to list')
+        return redirect('/')
+    return render_template('form.html', title = title, form = form)
 
 if __name__ == '__main__':
     app.run(debug = True)

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<a href="/add">Add a new fish</a><br>
     {% for fish in fishes %}
     <p>{{ fish.name }}</p>
     {% endfor %}

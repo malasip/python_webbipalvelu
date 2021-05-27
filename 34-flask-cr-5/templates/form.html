@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="post"></form>
+<form method="post">
     {% for field in form %}
     <p>
         {% if not field.flags.hidden %}
@@ -10,4 +10,6 @@
         {{ field }}
     </p>
     {% endfor %}
+    <input type="submit">
+</form>
 {% endblock content %}
