@@ -42,7 +42,7 @@ def add():
         form = NewMessageForm()
     else:
         form = ReplyMessageForm()
-    if(form.validate_on_submit()):
+    if form.validate_on_submit():
         message = Message()
         form.populate_obj(message)
         if request.args.get('reply'):

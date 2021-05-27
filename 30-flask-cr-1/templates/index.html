@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for task in tasks %}
+<div style = "border:2px; border-style: solid;">
+    <label>Task {{ task.id }},  created: {{ task.created }}</label>
+    <p>{{ task.content }}</p>
+</div>
+{% endfor %}
+{% endblock content %}

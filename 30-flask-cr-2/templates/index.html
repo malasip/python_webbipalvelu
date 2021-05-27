@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for task in tasks %}
+<div style = "border:2px; border-style: solid; {% if task.completed %}color: green{% endif %}">
+    <label>Task {{ task.id }},  created: {{ task.created }}{% if task.completed %}, completed: {{ task.completed }}{% endif %}</label>
+    <a href="/complete?id={{ task.id }}">Mark complete</a>&nbsp;&nbsp;<a href="/edit?id={{ task.id }}">Edit</a>
+    <p>{{ task.content }}</p>
+</div>
+{% endfor %}
+{% endblock content %}
