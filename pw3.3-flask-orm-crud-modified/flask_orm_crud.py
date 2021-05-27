@@ -37,7 +37,7 @@ def index():
     return render_template('index.html', title = title, messages = messages)
 
 
-@app.route('/reply/<int:id>', methods = ['GET', 'POST'])
+@app.route('/<int:id>/reply', methods = ['GET', 'POST'])
 @app.route('/add', methods = ['GET', 'POST'])
 def add(id = None):
     if id:
@@ -57,7 +57,7 @@ def add(id = None):
     title = 'Post a new message'
     return render_template('add_form.html', title = title, form = form)
 
-@app.route('/edit/<int:id>', methods = ['GET', 'POST'])
+@app.route('/<int:id>/edit', methods = ['GET', 'POST'])
 def edit(id = None):
     message = Message.query.get_or_404(id)
     form = EditMessageForm(obj = message)
@@ -70,7 +70,7 @@ def edit(id = None):
     title = f'Editing message "{ message.title }"'
     return render_template('edit_form.html', title = title, form = form, id = id)
 
-@app.route('/delete/<int:id>')
+@app.route('/<int:id>/delete')
 def delete(id = None):
     message = Message.query.get_or_404(id)
     db.session.delete(message)

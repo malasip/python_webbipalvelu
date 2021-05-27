@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method = "POST" action = "/edit/{{ id }}">
+<form method = "POST" action = "/{{ id }}/edit">
     {% for field in form %}
     <p>{% if not field.flags.hidden %}{{ field.label }}: {% endif %}{{ field }}</p>
     {% endfor %}
