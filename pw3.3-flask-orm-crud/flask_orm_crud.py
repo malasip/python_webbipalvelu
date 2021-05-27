@@ -38,8 +38,8 @@ def index():
 @app.route('/add', methods = ['GET', 'POST'])
 def add():
     form = NewMessageForm()
-    message = Message()
-    if(request.method == 'POST'):
+    if(form.validate_on_submit()):
+        message = Message()
         form.populate_obj(message)
         db.session.add(message)
         db.session.commit()
@@ -52,7 +52,8 @@ def add():
 def edit():
     id = escape(request.args.get('id'))
     message = Message.query.get(id)
-    if(request.method == 'POST'):
+    form = EditMessageForm(obj = message)
+    if(form.validate_on_submit()):
         message.title = request.form.get('title')
         message.content = request.form.get('content')
         message.modified = datetime.now()
@@ -60,7 +61,6 @@ def edit():
         flash('Message modified succesfully')
         return redirect('/')
     title = f'Editing message "{ message.title }"'
-    form = EditMessageForm(obj = message)
     return render_template('edit_form.html', title = title, form = form, id = id)
 
 @app.route('/delete')
