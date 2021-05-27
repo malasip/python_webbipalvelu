@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href="/add">Add new book</a><br>
+{% for book in books %}
+<p>Book name: {{ book.name }}, Author: {{ book.author }}</p>
+{% endfor %}
+{% endblock content %}

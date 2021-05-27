@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="/add-game">Add new</a><br>
+    {% for game in games %}
+    <p>{{ game.name }}</p>
+    {% endfor %}
+{% endblock content %}

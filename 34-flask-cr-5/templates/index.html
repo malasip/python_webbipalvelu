@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for fish in fishes %}
+    <p>{{ fish.name }}</p>
+    {% endfor %}
+{% endblock content %}
