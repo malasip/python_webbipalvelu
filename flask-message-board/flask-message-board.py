@@ -55,7 +55,7 @@ class initDB():
 
 @app.route('/')
 def index():
-    title = 'All messages'
+    title = 'All threads'
     messages = Message.query.filter(Message.parent_id == None).order_by(Message.id.desc()).all()
     return render_template('index.html', title = title, messages = messages)
 
