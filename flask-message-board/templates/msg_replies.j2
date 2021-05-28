@@ -1,0 +1,29 @@
+{% macro get_replies(message, offset) %}
+    {% if message.replies %}
+        {% for reply in message.replies %}
+        <hr>
+        <div style="padding-left: {{ offset }}px;" id="{{ reply.id }}">
+            <h5><a href="/#{{ reply.parent_id }}">>{{ reply.title }}</a></h5>
+            <h6>#{{ reply.id }} {{ reply.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if reply.modified %}, edited {{ reply.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %} by {{ reply.user.displayname }}</h6>
+            <p>{{ reply.message }}</p>
+            {% if reply.replies %}
+            <h6>Replies:&nbsp;
+                {% for r in reply.replies %}
+                <a href="/#{{ r.id }}">>>{{ r.id }}</a>&nbsp;
+                {% endfor %}
+            </h6>
+            {% endif %}
+            <p style="margin-top: 2px; margin-bottom: 4px;">
+                {% if currentUser().id == reply.user_id or currentUser().moderator %}
+                    <a href="/{{ reply.id }}/delete?r={{ request.path }}" style="color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/{{ reply.id }}/edit?r={{ request.path }}">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="/{{ reply.id }}/reply?r={{ request.path }}">Reply</a>
+                {% elif currentUser() %}
+                    <a href="/{{ reply.id }}/reply?r={{ request.path }}">Reply</a>
+                {% endif %}
+            </p>
+        </div>
+        {{ get_replies(reply, offset + 20) }}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}

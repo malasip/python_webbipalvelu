@@ -19,11 +19,17 @@
     </style>
 </head>
 <body>
-    <h1>{{ title }}</h1>
+    <h1>Haagaboard 0.1</h1>
     <hr>
     <nav>
         > <a href="/">Home</a><br>
+        {% if not currentUser() %}
+        > <a href="/user/login?r={{ request.path }}">Login</a><br>
+        > <a href="/user/register?r={{ request.path }}">Register</a><br>
+        {% else %}
+        > <a href="/user/logout">Logout</a><br>
         > <a href="/add">New thread</a>
+        {% endif %}
     </nav>
     <hr>
     {% if get_flashed_messages() %}

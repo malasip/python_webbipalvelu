@@ -1,32 +1,12 @@
 {% extends 'base.html' %}
 
-{% macro get_replies(message, offset) %}
-    {% if message.replies %}
-        {% for reply in message.replies %}
-        <hr>
-        <div style="padding-left: {{ offset }}px;" id="{{ reply.id }}">
-            <h5><a href="/#{{ reply.parent_id }}">>{{ reply.title }}</a></h5>
-            <h6>#{{ reply.id }} {{ reply.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if reply.modified %}, edited {{ reply.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %} by {{ reply.user.displayname }}</h6>
-            <p>{{ reply.message }}</p>
-            {% if reply.replies %}
-            <h6>Replies:&nbsp;
-                {% for r in reply.replies %}
-                <a href="/#{{ r.id }}">>>{{ r.id }}</a>&nbsp;
-                {% endfor %}
-            </h6>
-            {% endif %}
-            <p style="margin-top: 2px; margin-bottom: 4px;"><a href="/{{ reply.id }}/delete" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ reply.id }}/edit">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ reply.id }}/reply">Reply</a></p>
-        </div>
-        {{ get_replies(reply, offset + 20) }}
-        {% endfor %}
-    {% endif %}
-{% endmacro %}
+{% import 'msg_replies.j2' as msg_replies %}
 
 {% block content %}
 {% for message in messages %}
 <div style="border: 2px; border-style: dotted; padding-left: 5px;">
     <div id="{{ message.id }}">
-        <h3>{{ message.title }}</h3>
+        <h3><a href="/{{ message.id }}">{{ message.title }}</a></h3>
         <h6>#{{ message.id }} {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if message.modified %}, edited {{ message.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %} by {{ message.user.displayname }}</h6>
         <p>{{ message.message }}</p>
         {% if message.replies %}
@@ -36,9 +16,17 @@
             {% endfor %}
         </h6>
         {% endif %}
-        <p style="margin-top: 2px; margin-bottom: 4px;"><a href="/{{ message.id }}/delete" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ message.id }}/edit">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ message.id }}/reply">Reply</a></p>
+        <p style="margin-top: 2px; margin-bottom: 4px;">
+            {% if currentUser().id == message.user_id or currentUser().moderator %}
+                <a href="/{{ message.id }}/delete?r={{ request.path }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/{{ message.id }}/edit?r={{ request.path }}">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/{{ message.id }}/reply?r={{ request.path }}">Reply</a>
+            {% elif currentUser() %}
+                <a href="/{{ message.id }}/reply?r={{ request.path }}">Reply</a>
+            {% endif %}
+        </p>
     </div>
-    {{ get_replies(message, 20) }}
-</div>
+    {{ msg_replies.get_replies(message, 20) }}
+</div><br>
 {% endfor %}
 {% endblock content %}
