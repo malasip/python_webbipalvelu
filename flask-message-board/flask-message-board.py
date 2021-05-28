@@ -17,7 +17,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String, nullable = False)
-    content = db.Column(db.String, nullable = False)
+    message = db.Column(db.String, nullable = False)
     timestamp = db.Column(db.DateTime, nullable = False, default = datetime.utcnow())
     modified = db.Column(db.DateTime)
     parent_id = db.Column(db.Integer, db.ForeignKey('message.id'))
@@ -39,7 +39,7 @@ class User(db.Model):
         
 
 NewMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'replies', 'parent', 'timestamp', 'modified'])
-EditMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'replies', 'parent', 'timestamp', 'modified'])
+EditMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'title', 'replies', 'parent', 'timestamp', 'modified'])
 ReplyMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'title', 'replies', 'parent', 'timestamp', 'modified'])
 
 @app.before_first_request
@@ -49,7 +49,7 @@ class initDB():
     user.setPassword('kala')
     db.session.add(user)
     db.session.commit()
-    message = Message(user_id = user.id, title = 'test', content = 'Test message')
+    message = Message(user_id = user.id, title = 'test', message = 'Test message')
     db.session.add(message)
     db.session.commit()
 
@@ -58,9 +58,6 @@ def index():
     title = 'All messages'
     messages = Message.query.filter(Message.parent_id == None).order_by(Message.id.desc()).all()
     return render_template('index.html', title = title, messages = messages)
-
-def unpackMessage(message):
-    pass
 
 @app.route('/<int:id>/reply', methods = ['GET', 'POST'])
 @app.route('/add', methods = ['GET', 'POST'])
@@ -74,13 +71,13 @@ def add(id = None):
         form.populate_obj(message)
         if id:
             message.parent_id = id
-            message.title = f'Re: {Message.query.get_or_404(id).title}'
+            message.title = f'{Message.query.get_or_404(id).title}'
         db.session.add(message)
         db.session.commit()
         flash('Message posted succesfully')
         return redirect('/')
     title = 'Post a new message'
-    return render_template('add_form.html', title = title, form = form)
+    return render_template('form.html', title = title, form = form)
 
 @app.route('/<int:id>/edit', methods = ['GET', 'POST'])
 def edit(id = None):
@@ -93,7 +90,7 @@ def edit(id = None):
         flash('Message modified succesfully')
         return redirect('/')
     title = f'Editing message "{ message.title }"'
-    return render_template('edit_form.html', title = title, form = form, id = id)
+    return render_template('form.html', title = title, form = form, id = id)
 
 @app.route('/<int:id>/delete')
 def delete(id = None):
