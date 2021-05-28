@@ -20,8 +20,9 @@ class Message(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String, nullable = False)
     message = db.Column(db.String, nullable = False)
-    timestamp = db.Column(db.DateTime, nullable = False, default = datetime.utcnow())
+    timestamp = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
     modified = db.Column(db.DateTime)
+    deleted = db.Column(db.DateTime)
     parent_id = db.Column(db.Integer, db.ForeignKey('message.id'))
     replies = db.relationship('Message')
 
@@ -43,7 +44,7 @@ class User(db.Model):
     username = db.Column(db.String, nullable = False, unique = True)
     displayname = db.Column(db.String, nullable = False, unique = True)
     pwhash = db.Column(db.String, nullable = False)
-    active = db.Column(db.DateTime, default = datetime.utcnow())
+    active = db.Column(db.DateTime, default = datetime.utcnow)
     moderator = db.Column(db.Boolean, nullable = False, default = False)
     messages = db.relationship('Message', backref = db.backref('user', remote_side = [id]))
 
@@ -138,9 +139,12 @@ def logout():
 def index(id = None):
     if id:
         message = Message.query.get_or_404(id)
+        if message.deleted:
+            flash('That message has been deleted')
+            return redirect('/')
         messages = [message]
         return render_template('index.html', messages = messages)
-    messages = Message.query.filter(Message.parent_id == None).order_by(Message.id.desc()).all()
+    messages = Message.query.filter(Message.parent_id == None).filter(Message.deleted == None).order_by(Message.id.desc()).all()
     return render_template('index.html', messages = messages)
 
 @app.route('/<int:id>/reply', methods = ['GET', 'POST'])
@@ -203,7 +207,8 @@ def delete(id = None):
         flash('This action requires valid user')
         return redirect('/')
     message = Message.query.get_or_404(id)
-    db.session.delete(message)
+    message.deleted = datetime.utcnow()
+    #db.session.delete(message)
     db.session.commit()
     flash('Message deleted succesfully')
     url = request.args.get('r')

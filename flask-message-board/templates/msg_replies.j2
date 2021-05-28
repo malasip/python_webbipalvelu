@@ -3,8 +3,11 @@
         {% for reply in message.replies %}
         <hr>
         <div style="padding-left: {{ offset }}px;" id="{{ reply.id }}">
+            {% if reply.deleted %}
+            <p>>>This message has been deleted</p>
+            {% else %}
             <h5><a href="/#{{ reply.parent_id }}">>{{ reply.title }}</a></h5>
-            <h6>#{{ reply.id }} {{ reply.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if reply.modified %}, edited {{ reply.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %} by {{ reply.user.displayname }}</h6>
+            <h6>#{{ reply.id }} {{ reply.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}{% if reply.modified %}, edited {{ reply.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %} by {{ reply.user.displayname }}</h6>
             <p>{{ reply.message }}</p>
             {% if reply.replies %}
             <h6>Replies:&nbsp;
@@ -22,6 +25,7 @@
                     <a href="/{{ reply.id }}/reply?r={{ request.path }}">Reply</a>
                 {% endif %}
             </p>
+            {% endif %}
         </div>
         {{ get_replies(reply, offset + 20) }}
         {% endfor %}
