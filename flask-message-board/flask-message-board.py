@@ -71,7 +71,7 @@ def add(id = None):
         form.populate_obj(message)
         if id:
             message.parent_id = id
-            message.title = f'{Message.query.get_or_404(id).title}'
+            message.title = f'Re: {Message.query.get_or_404(id).title}'
         db.session.add(message)
         db.session.commit()
         flash('Message posted succesfully')
