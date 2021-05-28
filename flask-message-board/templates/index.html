@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% macro get_replies(message) %}
+    {% if message.replies %}
+        {% for reply in message.replies %}
+        <hr>
+        <div style="margin-left: 20px;">
+            <h4>{{ reply.title }}</h4>
+            <h5>Reply by {{ reply.user }} on {{ reply.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if reply.modified %}, edited {{ reply.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %}</h5>
+            <p>{{ reply.content }}</p>
+            <p><a href="/{{ reply.id }}/delete" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ reply.id }}/edit">Edit</a></p>
+        </div>
+        {% call get_replies(reply) %}
+        {% endcall get_replies %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% call(user) dump_users(list_of_user) %}
+    <dl>
+        <dt>Realname</dt>
+        <dd>{{ user.realname|e }}</dd>
+        <dt>Description</dt>
+        <dd>{{ user.description }}</dd>
+    </dl>
+{% endcall %}
+
+{% block content %}
+{% for message in messages %}
+<div style="border: 2px; border-style: dotted; padding-left: 5px;">
+    <h3>{{ message.title }}</h3>
+    <h5>Posted by {{ message.user.displayname }} on {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}{% if message.modified %}, edited {{ message.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %}</h5>
+    <p>{{ message.content }}</p>
+    <p><a href="/{{ message.id }}/delete" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ message.id }}/edit">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ message.id }}/reply">Reply</a></p>
+    {% if message.replies %}
+        {% for reply in message.replies %}
+            {% call get_replies(reply) %}
+            {% endcall get_replies %}
+        {% endfor %}
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock content %}

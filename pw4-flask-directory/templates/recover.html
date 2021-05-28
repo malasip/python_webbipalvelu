@@ -12,6 +12,7 @@
     <label>Email: </label><input type="text" value="{{ person.email }}" disabled><br>
     <label>Address: </label><input type="text" value="{{ person.address }}" disabled><br>
     <label>City: </label><input type="text" value="{{ person.city }}" disabled><br>
+    <label>Deleted: {{ person.deleted.strftime('%Y-%m-%d %H:%M') }}</label>
     <label>Restore: </label><input type="checkbox" value="{{ person.id }}" name="person_checkbox">
 </div><br>
 {% endfor %}
