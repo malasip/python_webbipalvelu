@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+<h3><a href="/add">Add new book</a></h3>
+{% endif %}
+    {% for book in books %}
+        <h4>{{ book.name }}</h4>
+        <p>{{ book.description }}</p>
+        {% if current_user.is_authenticated %}
+        <a href="/{{ book.id }}/delete" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="/{{ book.id }}/edit">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;
+        {% endif %}
+    {% endfor %}
+{% endblock content %}
