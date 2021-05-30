@@ -73,6 +73,13 @@ def unauthorized():
     content = 'You need to be logged in to access this page'
     return render_template('40x.html', title = title, content = content)
 
+@app.errorhandler(400)
+def error_page(error):
+    print(error)
+    title = 'Error loading page'
+    content = 'There was an error accessing page. Team of monkeys have been dispatched to reseolve the issue.'
+    return render_template('40x.html', title = title, content = content)
+
 @app.errorhandler(404)
 def page_not_found():
     title = 'Page not found'
@@ -101,12 +108,17 @@ def login():
     form = UserForm()
     if form.validate_on_submit():
         user = User.query.filter(User.username == form.username.data).first()
-        if user.checkPassword(form.password.data):
-            login_user(user)
-            flash('Logged in succesfully')
-            next = request.args.get('next')
-            if not is_safe_url(next):
-                return abort(400)
+        if not user:
+            flash('Invalid username or password')
+            return redirect('/login')
+        if not user.checkPassword(form.password.data):
+            flash('Invalid username or password')
+            return redirect('/login')
+        login_user(user)
+        flash('Logged in succesfully')
+        next = request.args.get('next')
+        if not is_safe_url(next):
+            return abort(400)
         return redirect(next or url_for('index'))
     return render_template('form.html', form = form)
 
