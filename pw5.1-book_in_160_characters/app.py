@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect, flash, request, abort, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms.ext.sqlalchemy.orm import model_form
 from wtforms import StringField, PasswordField, validators
 from werkzeug.security import generate_password_hash, check_password_hash
 from secrets import SystemRandom
@@ -21,9 +20,6 @@ def initDB():
     db.create_all()
     db.session.add(Book(name = 'Harry Potter and the Chamber of Secrets', description = 'The second instalment of boy wizard Harry Potter\'s adventures at Hogwarts School of Witchcraft and Wizardry, based on the novel by JK Rowling'))
     db.session.add(Book(name = 'Harry Potter and the Philosopher\'s Stone', description = 'Harry Potter thinks he is an ordinary boy - until he is rescued by a beetle-eyed giant of a man and enrols at Hogwarts School of Witchcraft and Wizardry.'))
-    user = User(username = 'mika')
-    user.setPassword('kala')
-    db.session.add(user)
     db.session.commit()
 
 class Book(db.Model):
