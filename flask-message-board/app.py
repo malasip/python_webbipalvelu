@@ -26,8 +26,8 @@ class Message(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('message.id'))
     replies = db.relationship('Message')
 
-NewMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'replies', 'parent', 'timestamp', 'modified', 'thread_id'])
-NoTitleMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'title', 'replies', 'parent', 'timestamp', 'modified', 'thread_id'])
+#NewMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'replies', 'parent', 'timestamp', 'modified', 'thread_id'])
+#NoTitleMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'title', 'replies', 'parent', 'timestamp', 'modified', 'thread_id'])
 # Message creation/ edit forms
 class NewMessageForm(FlaskForm):
     title = StringField('Title', validators = [validators.InputRequired()])

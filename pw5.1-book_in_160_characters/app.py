@@ -97,10 +97,7 @@ def register():
         db.session.commit()
         login_user(user)
         flash('Registered succesfully')
-        next = request.args.get('next')
-        if not is_safe_url(next):
-            return abort(400)
-        return redirect(next or url_for('index'))
+        return redirect(url_for('index'))
     return render_template('form.html', form = form)
 
 @app.route('/login', methods = ['GET', 'POST'])
