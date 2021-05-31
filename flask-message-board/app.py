@@ -3,7 +3,7 @@ from flask import Flask, render_template, redirect, request, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm, validators
 from wtforms.ext.sqlalchemy.orm import model_form
-from secrets import SystemRandom
+from secrets import token_bytes, token_urlsafe
 from markupsafe import escape
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import StringField, PasswordField, TextAreaField, validators
@@ -11,7 +11,11 @@ from sqlalchemy import exc
 
 
 app = Flask(__name__)
-app.secret_key = SystemRandom.randbytes(SystemRandom, 128)
+app.secret_key = token_bytes(128)
+register_token = token_urlsafe(20)
+
+with open('token', 'w') as f:
+    f.write(register_token)
 
 db = SQLAlchemy(app)
 
@@ -69,6 +73,7 @@ class UserForm(FlaskForm):
     username = StringField('Username', validators = [validators.InputRequired()])
     password = PasswordField('Password', validators = [validators.InputRequired()])
     displayname = StringField('Display name', validators = [validators.InputRequired()])
+    token = StringField('Register token', validators = [validators.InputRequired()])
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators = [validators.InputRequired()])
@@ -111,6 +116,9 @@ def login():
 def register():
     form = UserForm()
     if form.validate_on_submit():
+        if(form.token.data != register_token):
+            flash('Invalid token')
+            return redirect('/user/register')
         user = User(username = form.username.data, displayname = form.displayname.data)
         user.setPassword(form.password.data)
         try:
