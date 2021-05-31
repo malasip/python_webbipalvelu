@@ -222,9 +222,12 @@ def add(id = None):
 @login_required
 def edit(id = None):
     message = Message.query.get_or_404(id)
-    if message.user_id != login_manager.current_user.get_id() or not current_user.moderator:
+    if message.user_id != current_user.get_id() or not current_user.moderator:
         flash('You do not have permission to modify this message')
-        return redirect('/')
+        next = request.args.get('next')
+        if not is_safe_url(next):
+            return abort(400)
+        return redirect(next or url_for('index'))
     form = NoTitleMessageForm(obj = message)
     if(form.validate_on_submit()):
         form.populate_obj(message)
