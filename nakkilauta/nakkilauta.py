@@ -96,7 +96,7 @@ class NoTitleMessageForm(FlaskForm):
 @app.before_first_request
 class initDB():
     db.create_all()
-    if User.query.filter(User.Username == 'Moderator').first() == None:
+    if User.query.filter(User.username == 'Moderator').first() == None:
         user = User(username = 'Moderator', displayname = 'Moderator', moderator = True)
         user.setPassword('Moderator')
         db.session.add(user)
@@ -222,7 +222,7 @@ def add(id = None):
 @login_required
 def edit(id = None):
     message = Message.query.get_or_404(id)
-    if message.user_id != current_user.get_id() or not current_user.moderator:
+    if message.user_id != login_manager.current_user.get_id() or not current_user.moderator:
         flash('You do not have permission to modify this message')
         return redirect('/')
     form = NoTitleMessageForm(obj = message)

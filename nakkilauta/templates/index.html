@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% import 'msg_replies.j2' as msg_replies %}
+{% import 'msg_replies.j2' as msg_replies with context %}
 
 {% block content %}
 {% for message in messages %}
