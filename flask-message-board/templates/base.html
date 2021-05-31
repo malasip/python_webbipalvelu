@@ -24,10 +24,10 @@
     <nav>
         > <a href="/">Home</a><br>
         {% if not currentUser() %}
-        > <a href="/user/login?r={{ request.path }}">Login</a><br>
-        > <a href="/user/register?r={{ request.path }}">Register</a><br>
+        > <a href="/login?next={{ request.path }}">Login</a><br>
+        > <a href="/register">Register</a><br>
         {% else %}
-        > <a href="/user/logout">Logout</a><br>
+        > <a href="/logout">Logout</a><br>
         > <a href="/add">New thread</a>
         {% endif %}
     </nav>

@@ -18,11 +18,11 @@
         {% endif %}
         <p style="margin-top: 2px; margin-bottom: 4px;">
             {% if currentUser().id == message.user_id or currentUser().moderator %}
-                <a href="/{{ message.id }}/delete?r={{ request.path }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="/{{ message.id }}/edit?r={{ request.path }}">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="/{{ message.id }}/reply?r={{ request.path }}">Reply</a>
+                <a href="/{{ message.id }}/delete?next={{ request.path }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/{{ message.id }}/edit?next={{ request.path }}">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/{{ message.id }}/reply?next={{ request.path }}">Reply</a>
             {% elif currentUser() %}
-                <a href="/{{ message.id }}/reply?r={{ request.path }}">Reply</a>
+                <a href="/{{ message.id }}/reply?next={{ request.path }}">Reply</a>
             {% endif %}
         </p>
     </div>

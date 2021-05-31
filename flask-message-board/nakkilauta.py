@@ -1,12 +1,12 @@
 from datetime import datetime
-from flask import Flask, render_template, redirect, request, flash, session
+from flask import Flask, render_template, redirect, request, flash, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm, validators
-from wtforms.ext.sqlalchemy.orm import model_form
+from flask_wtf import FlaskForm
 from secrets import token_bytes, token_urlsafe
-from markupsafe import escape
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms import StringField, PasswordField, TextAreaField, validators
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from urllib.parse import urlparse, urljoin
 from sqlalchemy import exc
 
 
@@ -14,10 +14,64 @@ app = Flask(__name__)
 app.secret_key = token_bytes(128)
 register_token = token_urlsafe(20)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 with open('token', 'w') as f:
     f.write(register_token)
 
 db = SQLAlchemy(app)
+
+# User model and functions
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.String, nullable = False, unique = True)
+    displayname = db.Column(db.String, nullable = False, unique = True)
+    pwhash = db.Column(db.String, nullable = False)
+    active = db.Column(db.Boolean, default = False)
+    moderator = db.Column(db.Boolean, nullable = False, default = False)
+    messages = db.relationship('Message', backref = db.backref('user', remote_side = [id]))
+
+    def is_active(self):
+        return True
+
+    def is_authenticated(self):
+        return True
+    
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id
+
+    def setPassword(self, password):
+        self.pwhash = generate_password_hash(password)
+
+    def checkPassword(self, password):
+        return check_password_hash(self.pwhash, password)
+
+# User creation/ edit forms
+class UserForm(FlaskForm):
+    username = StringField('Username', validators = [validators.InputRequired()])
+    password = PasswordField('Password', validators = [validators.InputRequired()])
+    displayname = StringField('Display name', validators = [validators.InputRequired()])
+    token = StringField('Register token', validators = [validators.InputRequired()])
+
+# User login form
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators = [validators.InputRequired()])
+    password = PasswordField('Password', validators = [validators.InputRequired()])
+
+# User login manager
+@login_manager.user_loader
+def loadUser(id):
+    return User.query.get(id)
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    title = 'Unauthorized'
+    content = 'You need to be logged in to access this page'
+    return render_template('40x.html', title = title, content = content)
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -30,9 +84,7 @@ class Message(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('message.id'))
     replies = db.relationship('Message')
 
-#NewMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'replies', 'parent', 'timestamp', 'modified', 'thread_id'])
-#NoTitleMessageForm = model_form(Message, db_session = db.session, base_class = FlaskForm, exclude = ['user_id', 'user', 'title', 'replies', 'parent', 'timestamp', 'modified', 'thread_id'])
-# Message creation/ edit forms
+# Message creation forms
 class NewMessageForm(FlaskForm):
     title = StringField('Title', validators = [validators.InputRequired()])
     message = TextAreaField('Message', validators = [validators.InputRequired()])
@@ -40,79 +92,40 @@ class NewMessageForm(FlaskForm):
 class NoTitleMessageForm(FlaskForm):
     message = TextAreaField('Message', validators = [validators.InputRequired()])
 
-
-
-# User model and functions
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    username = db.Column(db.String, nullable = False, unique = True)
-    displayname = db.Column(db.String, nullable = False, unique = True)
-    pwhash = db.Column(db.String, nullable = False)
-    active = db.Column(db.DateTime, default = datetime.utcnow)
-    moderator = db.Column(db.Boolean, nullable = False, default = False)
-    messages = db.relationship('Message', backref = db.backref('user', remote_side = [id]))
-
-    def setPassword(self, password):
-        self.pwhash = generate_password_hash(password)
-
-    def checkPassword(self, password):
-        return check_password_hash(self.pwhash, password)
-
-def currentUser():
-    try:
-        uid = int(session['uid'])
-    except:
-        return None
-    return User.query.get_or_404(uid)
-
-# Set currentUser function as global for Jinja
-app.jinja_env.globals['currentUser'] = currentUser
-
-# User login and creation/ edit forms
-class UserForm(FlaskForm):
-    username = StringField('Username', validators = [validators.InputRequired()])
-    password = PasswordField('Password', validators = [validators.InputRequired()])
-    displayname = StringField('Display name', validators = [validators.InputRequired()])
-    token = StringField('Register token', validators = [validators.InputRequired()])
-
-class LoginForm(FlaskForm):
-    username = StringField('Username', validators = [validators.InputRequired()])
-    password = PasswordField('Password', validators = [validators.InputRequired()])
-
 # Initialize database
 @app.before_first_request
 class initDB():
     db.create_all()
-    user = User(username = 'Moderator', displayname = 'Moderator', moderator = True)
-    user.setPassword('Moderator')
-    db.session.add(user)
-    db.session.commit()
-    message = Message(user_id = user.id, title = 'First post', message = 'This is a first post')
-    db.session.add(message)
-    db.session.commit()
+    if User.query.filter(User.Username == 'Moderator').first() == None:
+        user = User(username = 'Moderator', displayname = 'Moderator', moderator = True)
+        user.setPassword('Moderator')
+        db.session.add(user)
+        db.session.commit()
 
-@app.route('/user/login', methods = ['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        user = User.query.filter(User.username == username).first()
-        if not user:
-            flash('Login failed, bad username or password')
-            return redirect('/user/login')
-        if user.checkPassword(password) and user.active != None:
-            session['uid'] = user.id
-            flash('Login successfull')
-            url = request.args.get('r')
-            if not url:
-                url = '/'
-            return redirect(url)
-        flash('Login failed, bad username or password')
-        return redirect('/user/login')
-    return render_template('form.html', form = form)
+# Url helper
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
 
-@app.route('/user/register', methods = ['GET', 'POST'])
+# Error page handlers
+@app.errorhandler(400)
+def error_page(error):
+    print(error)
+    title = 'Error loading page'
+    content = 'There was an error accessing page. Team of monkeys have been dispatched to reseolve the issue.'
+    return render_template('40x.html', title = title, content = content)
+
+@app.errorhandler(404)
+def page_not_found():
+    title = 'Page not found'
+    content = 'The page you tried to access does not exist or was removed'
+    return render_template('40x.html', title = title, content = content)
+
+# Application routes
+
+# User endpoints
+@app.route('/register', methods = ['GET', 'POST'])
 def register():
     form = UserForm()
     if form.validate_on_submit():
@@ -124,24 +137,45 @@ def register():
         try:
             db.session.add(user)
             db.session.commit()
+            login_user(user)
             flash('User created successfully.')
         except exc.IntegrityError:
             db.session.rollback()
             flash('Username not avalable')
             return redirect('/user/register')
-        session['uid'] = user.id
-        url = request.args.get('r')
-        if not url:
-            url = '/'
-        return redirect(url)
+        return redirect(url_for('index'))
     return render_template('form.html', form = form)
 
-@app.route('/user/logout')
+@app.route('/login', methods = ['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        user = User.query.filter(User.username == username).first()
+        if not user:
+            flash('Login failed, bad username or password')
+            return redirect(url_for('login'))
+        if not user.checkPassword(password):
+            flash('Login failed, bad username or password')
+            return redirect(url_for('login'))
+        login_user(user)
+        flash(f'Logged in as {user.displayname}')
+        next = request.args.get('next')
+        if not is_safe_url(next):
+            return abort(400)
+        return redirect(next or url_for('index'))
+    return render_template('form.html', form = form)
+
+@app.route('/logout')
+@login_required
 def logout():
-    session['uid'] = None
+    logout_user()
     flash('Logged out successfully')
     return redirect('/')
 
+
+# Message endpoints
 @app.route('/<int:id>')
 @app.route('/')
 def index(id = None):
@@ -157,10 +191,8 @@ def index(id = None):
 
 @app.route('/<int:id>/reply', methods = ['GET', 'POST'])
 @app.route('/add', methods = ['GET', 'POST'])
+@login_required
 def add(id = None):
-    if currentUser() == None:
-        flash('This action requires valid user')
-        return redirect('/')
     if id:
         form = NoTitleMessageForm()
     else:
@@ -168,30 +200,29 @@ def add(id = None):
     if form.validate_on_submit():
         message = Message()
         form.populate_obj(message)
-        message.user_id = currentUser().id
-        url = '/'
+        message.user_id = current_user.get_id()
         if id:
             message.parent_id = id
             message.title = f'Re: {Message.query.get_or_404(id).title}'
-            url = request.args.get('r')
         try:
             db.session.add(message)
             db.session.commit()
             flash('Message posted succesfully')
-            return redirect(url)
+            next = request.args.get('next')
+            if not is_safe_url(next):
+                return abort(400)
+            return redirect(next or url_for('index'))
         except:
             db.session.rollback()
             flash('Something went wrong')
-            return redirect(url)
+            return abort(400)
     return render_template('form.html', form = form)
 
 @app.route('/<int:id>/edit', methods = ['GET', 'POST'])
+@login_required
 def edit(id = None):
-    if currentUser() == None:
-        flash('This action requires valid user')
-        return redirect('/')
     message = Message.query.get_or_404(id)
-    if message.user_id != currentUser().id or not currentUser().moderator:
+    if message.user_id != current_user.get_id() or not current_user.moderator:
         flash('You do not have permission to modify this message')
         return redirect('/')
     form = NoTitleMessageForm(obj = message)
@@ -204,23 +235,23 @@ def edit(id = None):
         except:
             db.session.rollback()
             flash('Something went wrong')
-        url = request.args.get('r')
-        return redirect(url)
-    #title = f'Editing message "{ message.title }"'
+        next = request.args.get('next')
+        if not is_safe_url(next):
+            return abort(400)
+        return redirect(next or url_for('index'))
     return render_template('form.html', form = form, id = id)
 
 @app.route('/<int:id>/delete')
+@login_required
 def delete(id = None):
-    if currentUser() == None:
-        flash('This action requires valid user')
-        return redirect('/')
     message = Message.query.get_or_404(id)
     message.deleted = datetime.utcnow()
-    #db.session.delete(message)
     db.session.commit()
     flash('Message deleted succesfully')
-    url = request.args.get('r')
-    return redirect(url)
+    next = request.args.get('next')
+    if not is_safe_url(next):
+        return abort(400)
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':

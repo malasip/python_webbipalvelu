@@ -5,7 +5,7 @@
     {% for field in form %}
     <p>
         {% if not field.flags.hidden %}
-            {{ field.label }}: 
+            {{ field.label }} 
         {% endif %}
         {{ field }}
         {% for err in field.errors %}
