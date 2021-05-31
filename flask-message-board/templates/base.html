@@ -23,7 +23,7 @@
     <hr>
     <nav>
         > <a href="/">Home</a><br>
-        {% if not currentUser() %}
+        {% if not current_user.is_authenticated %}
         > <a href="/login?next={{ request.path }}">Login</a><br>
         > <a href="/register">Register</a><br>
         {% else %}

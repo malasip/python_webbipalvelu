@@ -17,11 +17,11 @@
         </h6>
         {% endif %}
         <p style="margin-top: 2px; margin-bottom: 4px;">
-            {% if currentUser().id == message.user_id or currentUser().moderator %}
+            {% if current_user.get_id() == message.user_id or current_user.moderator %}
                 <a href="/{{ message.id }}/delete?next={{ request.path }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;
                 <a href="/{{ message.id }}/edit?next={{ request.path }}">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;
                 <a href="/{{ message.id }}/reply?next={{ request.path }}">Reply</a>
-            {% elif currentUser() %}
+            {% elif current_user.is_authenticated %}
                 <a href="/{{ message.id }}/reply?next={{ request.path }}">Reply</a>
             {% endif %}
         </p>
