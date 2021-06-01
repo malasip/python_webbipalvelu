@@ -1,32 +1,23 @@
 {% extends 'base.html' %}
 
-{% import 'msg_replies.j2' as msg_replies with context %}
-
 {% block content %}
-{% for message in messages %}
+{% if threads %}
+<h3>New threads</h3><br>
+{% endif %}
+{% for thread in threads %}
 <div style="border: 2px; border-style: dotted; padding-left: 5px;">
-    <div id="{{ message.id }}">
-        <h3><a href="/{{ message.id }}">{{ message.title }}</a></h3>
-        <h6>#{{ message.id }} {{ message.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}{% if message.modified %}, edited {{ message.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %} by {{ message.user.displayname }}</h6>
-        <p>{{ message.message }}</p>
-        {% if message.replies %}
+    <div id="{{ thread.id }}">
+        <h3><a href="/{{ thread.board.name }}/{{ thread.id }}">{{ thread.title }}</a></h3>
+        <h6>#{{ thread.id }} {{ thread.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}{% if thread.modified %}, edited {{ thread.modified.strftime('%Y-%m-%d %H:%M') }}{% endif %} by {{ thread.user.display_name }}</h6>
+        <p>{{ thread.message }}</p>
+        {% if thread.replies %}
         <h6>Replies:&nbsp;
-            {% for reply in message.replies %}
+            {% for reply in thread.replies %}
             <a href="/#{{ reply.id }}">>>{{ reply.id }}</a>&nbsp;
             {% endfor %}
         </h6>
         {% endif %}
-        <p style="margin-top: 2px; margin-bottom: 4px;">
-            {% if current_user.get_id() == message.user_id or current_user.moderator %}
-                <a href="/{{ message.id }}/delete?next={{ request.path }}" style = "color: red;">Delete</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="/{{ message.id }}/edit?next={{ request.path }}">Edit</a>&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="/{{ message.id }}/reply?next={{ request.path }}">Reply</a>
-            {% elif current_user.is_authenticated %}
-                <a href="/{{ message.id }}/reply?next={{ request.path }}">Reply</a>
-            {% endif %}
-        </p>
     </div>
-    {{ msg_replies.get_replies(message, 20) }}
 </div><br>
 {% endfor %}
 {% endblock content %}

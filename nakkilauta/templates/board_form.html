@@ -5,7 +5,7 @@
     {% for field in form %}
     <p>
         {% if not field.flags.hidden %}
-            {{ field.label }} 
+            {{ field.label }}<br>
         {% endif %}
         {{ field }}
         {% for err in field.errors %}
@@ -13,6 +13,9 @@
         {% endfor %}
     </p>
     {% endfor %}
+    {% if parent %}
+        <input type="hidden" name="parent" value="{{ parent }}">
+    {% endif %}
     <input type="submit">
 </form>
 {% endblock content %}

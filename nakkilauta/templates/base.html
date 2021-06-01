@@ -4,9 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nakkilauta 0.1</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         div:target {
             background: #f8f99a;
+        }
+        .sidebar {
+            height: 100%;
+            width: 160px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #f1f5b0;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            padding: 6px 8px 6px 16px;
+            text-decoration: none;
+            font-size: 1em;
+            color: #2c2c2c;
+            display: block;
+        }
+        .sidebar a:hover {
+            color: #0ba4e0;
+        }
+        #login_link{display: none;}
+        #login_button{
+            width: 100%;
+            margin-top: 10px;}
+
+        .sidebar a.icon {display: none;}
+        .sidebar h1, .sidebar h2, .sidebar h3, .sidebar h4 {
+            padding: 6px 8px 6px 16px;
+        }
+        .sidebar input {
+            max-width: 120px;
+        }
+        .sidebar form {
+            padding-left: 0px;
+            margin-bottom: 8px;
+            text-align: center;
+            width: 100%;
+            display: block;
+        }
+
+        /* When the screen is less than 600 pixels wide, hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
+        @media screen and (max-width: 600px) {
+            .sidebar a:not(:first-child) {display: none;}
+            .sidebar a.icon {
+                float: right;
+                display: block;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .sidebar a {float: left;}
+            .sidebar hr {display: none;}
+            div.content {margin-left: 0;}
+            .main {margin-left: 0px !important;}
+            textarea {
+                margin-left: 0px !important;
+                width: 100%;
+                height: 200px;
+            }
+            .sidebar form {display: none;}
+        }
+
+        /* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
+        @media screen and (max-width: 600px) {
+            .sidebar.responsive {position: relative;}
+            .sidebar.responsive a.icon {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+            .sidebar.responsive a {
+                float: none;
+                display: block;
+                text-align: left;
+            }
+            .sidebar.responsive #login_link {
+                float: none;
+                display: block;
+                text-align: left;
+            }
+            .sidebar.responsive hr {
+                float: none;
+                display: block;
+            }
+        }
+
+        a.deleted {
+            color: #fc0000
+        }
+        .main {
+            margin-left: 160px;
+            padding: 0px 10px;
         }
         h3, h5 {
             margin-top: 4px;
@@ -16,28 +112,71 @@
             margin-top: 2px;
             margin-bottom: 2px;
         }
+        .left {
+            width: 50%;
+            float: left;
+        }
+        .right {
+            width: 50%;
+            float: right; 
+        }
     </style>
+    <script>
+        function toggleMenu() {
+            var x = document.getElementById("sidebar");
+            if (x.className === "sidebar") {
+                x.className += " responsive";
+            } else {
+                x.className = "sidebar";
+            }
+        }
+    </script>
 </head>
 <body>
-    <h1>Nakkilauta 0.1</h1>
-    <hr>
-    <nav>
-        > <a href="/">Home</a><br>
-        {% if not current_user.is_authenticated %}
-        > <a href="/login?next={{ request.path }}">Login</a><br>
-        > <a href="/register">Register</a><br>
-        {% else %}
-        > <a href="/logout">Logout</a><br>
-        > <a href="/add">New thread</a>
-        {% endif %}
-    </nav>
-    <hr>
-    {% if get_flashed_messages() %}
-        {% for message in get_flashed_messages() %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-    {% block content %}
-    {% endblock content %}
+    <div class="sidebar" id="sidebar">
+        <nav>
+            <a href="/">Home</a>
+            {% if not current_user.is_authenticated %}
+            <form method = "POST" action="/login?next={{ request.path }}">
+                <input id="username" name="username" required type="text" placeholder="Usename" maxlength="50">
+                <input id="password" name="password" required type="password" placeholder="Password" maxlength="100">
+                <input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+                <input type="submit" value="Login" id="login_button">
+            </form>
+            <a href="/login" id="login_link">Login</a>
+            <a href="/register">Register</a>
+            {% else %}
+            <a href="#">{{ current_user.display_name }}</a>
+            <a href="/logout">Logout</a>
+            {% endif %}
+            {% if current_user.is_superuser %}
+            <a href="/admin">Manage site</a>
+            {% endif %}
+            <hr>
+            {% block side_menu %}
+            {% endblock side_menu %}
+            {% for board in boards %}
+            <a href="/{{ board.name }}" {% if board.deleted %} class="deleted" {% endif %}>{{ board.display_name }}</a>
+            {% endfor %}
+            <a href="javascript:void(0);" class="icon" onclick="toggleMenu()">
+                <i class="fa fa-bars"></i>
+              </a>
+        </nav>
+    </div>
+    <div class="main">
+        <div class="top">
+            <h1>Nakkilauta 0.1</h1>
+            <hr>
+        </div>
+        <div class="bottom">
+            {% if get_flashed_messages() %}
+                {% for message in get_flashed_messages() %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
 </body>
 </html>
